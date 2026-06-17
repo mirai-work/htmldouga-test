@@ -1,90 +1,70 @@
 <!DOCTYPE html>
-
 <html lang="ja">
-
 <head>
-<meta charset="utf-8">
-
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
-
-<script>
-
-function playMovie(filename, callbackName = null) {
-
-    const oldVideo = document.getElementById("moviePlayer");
-    if (oldVideo) oldVideo.remove();
-
-    const video = document.createElement("video");
-
-    video.id = "moviePlayer";
-    video.src = filename;
-
-    video.autoplay = true;
-    video.controls = false;
-    video.playsInline = true;
-
-    video.style.position = "fixed";
-    video.style.left = "0";
-    video.style.top = "0";
-    video.style.width = "100vw";
-    video.style.height = "100vh";
-    video.style.objectFit = "contain";
-    video.style.background = "black";
-    video.style.zIndex = "9999";
-
-    document.body.appendChild(video);
-
-    video.onended = function () {
-
-        video.remove();
-
-        if (
-            callbackName &&
-            window.pyxel_app &&
-            typeof window.pyxel_app[callbackName] === "function"
-        ) {
-            window.pyxel_app[callbackName]();
+    <meta charset="UTF-8">
+    <title>Pyxel Video Player</title>
+    <style>
+        /* 動画再生用のスタイル（画面中央に配置） */
+        #movie-overlay {
+            display: none; /* 通常時は非表示 */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+            z-index: 9999; /* Pyxelの画面より手前に表示 */
+            justify-content: center;
+            align-items: center;
         }
-    };
-
-    video.onerror = function () {
-
-        console.log("Movie Error");
-
-        video.remove();
-
-        if (
-            callbackName &&
-            window.pyxel_app &&
-            typeof window.pyxel_app[callbackName] === "function"
-        ) {
-            window.pyxel_app[callbackName]();
+        video {
+            max-width: 100%;
+            max-height: 100%;
         }
-    };
-}
-
-</script>
-
-<style>
-
-html,body{
-    margin:0;
-    padding:0;
-    overflow:hidden;
-    background:black;
-}
-
-</style>
-
+    </style>
 </head>
-
 <body>
 
-<pyxel-run
- name="gamehyoujyun.py"
- gamepad="enabled"> </pyxel-run>
+    <canvas id="canvas"></canvas>
 
+    <div id="movie-overlay">
+        <video id="game-video" src=""></video>
+    </div>
+
+    <script>
+        // Python側から呼び出されるグローバル関数
+        function playMovie(filename, callback) {
+            const overlay = document.getElementById('movie-overlay');
+            const video = document.getElementById('game-video');
+
+            // 動画のパスを設定して表示
+            video.src = filename;
+            overlay.style.display = 'flex';
+
+            // 動画を再生
+            video.play().catch(error => {
+                console.error("動画の再生に失敗しました。ブラウザのジェスチャー制限の可能性があります:", error);
+                // 失敗した場合は即座に終了処理へ
+                finishMovie(overlay, video, callback);
+            });
+
+            // 動画が最後まで再生された時のイベント
+            video.onended = function() {
+                finishMovie(overlay, video, callback);
+            };
+        }
+
+        // 動画終了時の共通処理
+        function finishMovie(overlay, video, callback) {
+            // 動画を非表示にして停止
+            overlay.style.display = 'none';
+            video.src = ""; 
+
+            // Python側の movie_finished メソッドを実行
+            if (callback) {
+                callback();
+            }
+        }
+    </script>
 </body>
-
 </html>
-
