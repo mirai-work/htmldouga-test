@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Pyxel Image Viewer</title>
-    <script src="https://cdn.jsdelivr.net/npm/pyxel-web@2.1.0/pyxel.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
     <style>
-        /* 画面全体のスタイル */
         body {
             margin: 0;
             background-color: #222;
@@ -16,7 +15,7 @@
             overflow: hidden;
         }
 
-        /* 画像表示用のオーバーレイ（最前面に表示） */
+        /* 画像表示用のオーバーレイ（最前面） */
         #image-overlay {
             display: none;
             position: absolute;
@@ -38,7 +37,9 @@
         }
     </style>
 </head>
-<body pyxel-app="gamehyoujyun.py">
+<body>
+
+    <pyxel-run name="gamehyoujyun.py"></pyxel-run>
 
     <div id="image-overlay" onclick="closePhoto()">
         <img id="game-photo" src="" alt="Photo">
