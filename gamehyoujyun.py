@@ -3,7 +3,8 @@ import js
 
 class App:
 
- def __init__(self):
+
+def __init__(self):
 
     pyxel.init(160, 120)
 
@@ -16,7 +17,7 @@ class App:
         self.draw
     )
 
- def play_movie(self, filename):
+def play_movie(self, filename):
 
     self.state = "MOVIE"
 
@@ -25,13 +26,13 @@ class App:
         "movie_finished"
     )
 
- def movie_finished(self):
+def movie_finished(self):
 
     print("動画終了")
 
     self.state = "TITLE"
 
- def update(self):
+def update(self):
 
     if self.state == "TITLE":
 
@@ -44,7 +45,7 @@ class App:
         if pyxel.btnp(pyxel.KEY_3):
             self.play_movie("sonota.mp4")
 
- def draw(self):
+def draw(self):
 
     pyxel.cls(0)
 
@@ -62,4 +63,7 @@ class App:
             "MOVIE PLAYING...",
             8
         )
+
+
 App()
+
