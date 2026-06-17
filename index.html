@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <title>Pyxel Video Player</title>
     <style>
-        /* 動画再生用のスタイル（画面中央に配置） */
+        /* 動画再生用のスタイル */
         #movie-overlay {
-            display: none; /* 通常時は非表示 */
+            display: none;
             position: absolute;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             background-color: black;
-            z-index: 9999; /* Pyxelの画面より手前に表示 */
+            z-index: 9999;
             justify-content: center;
             align-items: center;
         }
@@ -32,37 +32,31 @@
     </div>
 
     <script>
-        // Python側から呼び出されるグローバル関数
-        function playMovie(filename, callback) {
+        function playMovie(filename) {
             const overlay = document.getElementById('movie-overlay');
             const video = document.getElementById('game-video');
 
-            // 動画のパスを設定して表示
             video.src = filename;
             overlay.style.display = 'flex';
 
-            // 動画を再生
             video.play().catch(error => {
-                console.error("動画の再生に失敗しました。ブラウザのジェスチャー制限の可能性があります:", error);
-                // 失敗した場合は即座に終了処理へ
-                finishMovie(overlay, video, callback);
+                console.error("動画再生エラー（画面をクリックしてからお試しください）:", error);
+                finishMovie(overlay, video);
             });
 
-            // 動画が最後まで再生された時のイベント
+            // 動画が終了したときのイベント
             video.onended = function() {
-                finishMovie(overlay, video, callback);
+                finishMovie(overlay, video);
             };
         }
 
-        // 動画終了時の共通処理
-        function finishMovie(overlay, video, callback) {
-            // 動画を非表示にして停止
+        function finishMovie(overlay, video) {
             overlay.style.display = 'none';
             video.src = ""; 
 
-            // Python側の movie_finished メソッドを実行
-            if (callback) {
-                callback();
+            // Python側の movie_finished() メソッドを直接呼び出す
+            if (window.pyxel_app && typeof window.pyxel_app.movie_finished === 'function') {
+                window.pyxel_app.movie_finished();
             }
         }
     </script>
