@@ -62,5 +62,4 @@ class App:
             "MOVIE PLAYING...",
             8
         )
-
- App()
+App()
