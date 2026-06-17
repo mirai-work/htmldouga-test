@@ -1,66 +1,64 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
-
-<script>
-
-function showImage(filename, callbackName = null) {
-
-    const oldImg = document.getElementById("photoViewer");
-    if (oldImg) oldImg.remove();
-
-    const img = document.createElement("img");
-
-    img.id = "photoViewer";
-    img.src = filename;
-
-    img.style.position = "fixed";
-    img.style.left = "0";
-    img.style.top = "0";
-    img.style.width = "100vw";
-    img.style.height = "100vh";
-    img.style.objectFit = "contain";
-    img.style.background = "black";
-    img.style.zIndex = "9999";
-
-    document.body.appendChild(img);
-
-    img.onclick = function() {
-
-        img.remove();
-
-        if (
-            callbackName &&
-            window.pyxel_app &&
-            typeof window.pyxel_app[callbackName] === "function"
-        ) {
-            window.pyxel_app[callbackName]();
+    <meta charset="UTF-8">
+    <title>Pyxel Image Viewer</title>
+    <style>
+        /* 画像を画面いっぱいに表示するためのスタイル */
+        #image-overlay {
+            display: none; /* 通常時は非表示 */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.8); /* 背景を少し透過した黒に */
+            z-index: 9999; /* Pyxelの画面より手前に表示 */
+            justify-content: center;
+            align-items: center;
+            cursor: pointer; /* クリックできることを示す */
         }
-    };
-}
-
-</script>
-
-<style>
-html,body{
-    margin:0;
-    padding:0;
-    overflow:hidden;
-    background:black;
-}
-</style>
-
+        #game-photo {
+            max-width: 90%;
+            max-height: 90%;
+            border: 3px solid white; /* 写真っぽく白い枠線 */
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+    </style>
 </head>
-
 <body>
 
-<pyxel-run
- name="gamehyoujyun.py"
- gamepad="enabled"> </pyxel-run>
+    <canvas id="canvas"></canvas>
 
+    <div id="image-overlay" onclick="closePhoto()">
+        <img id="game-photo" src="" alt="Photo">
+    </div>
+
+    <script>
+        // Pythonから呼ばれる関数
+        function showImage(filename) {
+            const overlay = document.getElementById('image-overlay');
+            const img = document.getElementById('game-photo');
+
+            // 画像のパスを設定して表示
+            img.src = filename;
+            overlay.style.display = 'flex';
+        }
+
+        // オーバーレイ（または画像）がクリックされた時に実行される関数
+        function closePhoto() {
+            const overlay = document.getElementById('image-overlay');
+            const img = document.getElementById('game-photo');
+
+            // 非表示にして画像をクリア
+            overlay.style.display = 'none';
+            img.src = "";
+
+            // Python（Pyxel）側の photo_finished メソッドを呼び出して状態を戻す
+            if (window.pyxel_app && typeof window.pyxel_app.photo_finished === 'function') {
+                window.pyxel_app.photo_finished();
+            }
+        }
+    </script>
 </body>
 </html>
