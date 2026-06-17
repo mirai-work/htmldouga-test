@@ -3,7 +3,6 @@ import js
 
 class App:
 
-
 def __init__(self):
 
     pyxel.init(160, 120)
@@ -64,6 +63,4 @@ def draw(self):
             8
         )
 
-
 App()
-
