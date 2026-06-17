@@ -1,72 +1,37 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>Pyxel Image Viewer</title>
-    <script src="https://cdn.jsdelivr.net/npm/pyxel-web@2.1.0/pyxel.js"></script>
-    <style>
-        /* 画面全体のスタイル */
-        body {
-            margin: 0;
-            background-color: #222;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
+import pyxel
+import js
 
-        /* 画像表示用のオーバーレイ（最前面に表示） */
-        #image-overlay {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
-        #game-photo {
-            max-width: 90%;
-            max-height: 90%;
-            border: 3px solid white;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-    </style>
-</head>
-<body pyxel-app="gamehyoujyun.py">
+class App:
 
-    <div id="image-overlay" onclick="closePhoto()">
-        <img id="game-photo" src="" alt="Photo">
-    </div>
+    def __init__(self):
+        pyxel.init(160, 120)
+        self.state = "TITLE"
+        
+        # JavaScript側からPythonのメソッドを呼べるように登録
+        js.window.pyxel_app = self
 
-    <script>
-        // Pythonから呼ばれる関数
-        function showImage(filename) {
-            const overlay = document.getElementById('image-overlay');
-            const img = document.getElementById('game-photo');
+        pyxel.run(self.update, self.draw)
 
-            img.src = filename;
-            overlay.style.display = 'flex';
-        }
+    def show_photo(self):
+        self.state = "PHOTO"
+        # 画像ファイル名だけを渡してJSの関数を呼び出す
+        js.showImage("photo.PNG")
 
-        // クリックされた時に実行される関数
-        function closePhoto() {
-            const overlay = document.getElementById('image-overlay');
-            const img = document.getElementById('game-photo');
+    def photo_finished(self):
+        # JS側から画像が閉じられたら、ステートをTITLEに戻す
+        self.state = "TITLE"
 
-            overlay.style.display = 'none';
-            img.src = "";
+    def update(self):
+        if self.state == "TITLE":
+            if pyxel.btnp(pyxel.KEY_SPACE):
+                self.show_photo()
 
-            // Python側の photo_finished メソッドを安全に呼び出す
-            if (window.pyxel_app && typeof window.pyxel_app.photo_finished === 'function') {
-                window.pyxel_app.photo_finished();
-            }
-        }
-    </script>
-</body>
-</html>
+    def draw(self):
+        pyxel.cls(0)
+        
+        if self.state == "TITLE":
+            pyxel.text(20, 50, "SPACE : PHOTO", 7)
+        elif self.state == "PHOTO":
+            pyxel.text(35, 50, "SHOWING PHOTO...", 8)
+
+App()
