@@ -17,16 +17,23 @@ class App:
         self.state = "TITLE"
 
     def update(self):
-        if self.state == "TITLE":
-            if pyxel.btnp(pyxel.KEY_SPACE):
-                self.show_photo()
+        match self.state:
+            case "TITLE":
+                if pyxel.btnp(pyxel.KEY_SPACE):
+                    self.show_photo()
+
+            case "PHOTO":
+                pass
 
     def draw(self):
         pyxel.cls(0)
-        if self.state == "TITLE":
-            pyxel.text(20, 50, "SPACE : PHOTO", 7)
-        elif self.state == "PHOTO":
-            pyxel.text(35, 50, "SHOWING PHOTO...", 8)
 
-# 【注意】App() は class の外側（左端に寄せる）で呼び出します
+        match self.state:
+            case "TITLE":
+                pyxel.text(20, 50, "SPACE : PHOTO", 7)
+
+            case "PHOTO":
+                pyxel.text(35, 50, "SHOWING PHOTO...", 8)
+
+# App() は class の外側で呼び出す
 App()
